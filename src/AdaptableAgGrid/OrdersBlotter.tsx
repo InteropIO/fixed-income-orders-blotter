@@ -16,7 +16,6 @@ import { columnDefs, defaultColDef } from './columnDefs';
 import { AdaptableOrderColumns, NewOrder, rowData } from './rowData';
 import { renderReactRoot } from '../react-18-utils';
 import { agGridModules } from './agGridModules';
-import { setupFDC3Events } from './setupFDC3Events';
 
 import type { Order } from '@finos/fdc3';
 import '@interopio/theme-demo-apps/dist/io.applications.css';
@@ -50,7 +49,7 @@ export const OrdersBlotter = () => {
         'AppName=interop-Trial|Owner=interop|StartDate=2023-11-23|EndDate=2024-01-23|Ref=AdaptableLicense|Trial=true|TS=1700741032831|C=2692006938,2271485454,4261170317,1260976079,180944542,4061129120,1409499958,3452034758',
       primaryKey: 'OrderID',
       userName: 'Test User',
-      adaptableId: 'AdaptableFinsembleOrders',
+      adaptableId: 'AdaptableFixedIncomeOrders',
       filterOptions: {
         clearFiltersOnStartUp: true,
       },
@@ -113,15 +112,6 @@ export const OrdersBlotter = () => {
                     tone: 'success',
                     variant: 'outlined',
                   },
-                },
-              },
-            ],
-            StartChat: [
-              {
-                contextType: 'fdc3.contact',
-                contextMenu: {
-                  columnIds: ['ExecutedBroker'],
-                  icon: '_defaultFdc3',
                 },
               },
             ],
@@ -326,8 +316,6 @@ export const OrdersBlotter = () => {
         }
         onAdaptableReady={({ adaptableApi }) => {
           adaptableApiRef.current = adaptableApi;
-
-          // setupFDC3Events(adaptableApi);
         }}
       />
       <div className="ag-tick42 flex-1 ">
