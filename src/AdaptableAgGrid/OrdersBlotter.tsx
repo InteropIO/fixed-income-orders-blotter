@@ -51,6 +51,9 @@ export const OrdersBlotter = () => {
       primaryKey: 'OrderID',
       userName: 'Test User',
       adaptableId: 'AdaptableFinsembleOrders',
+      filterOptions: {
+        clearFiltersOnStartUp: true,
+      },
       fdc3Options: {
         enableLogging: true,
         gridDataContextMapping: {
