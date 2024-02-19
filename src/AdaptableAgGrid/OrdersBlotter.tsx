@@ -41,30 +41,6 @@ export const OrdersBlotter = () => {
       primaryKey: 'OrderID',
       userName: 'Test User',
       adaptableId: 'AdaptableFixedIncomeOrders',
-      fdc3Options: {
-        enableLogging: false,
-        intents: {
-          raises: {
-            ViewChart: [
-              {
-                contextType: 'fdc3.instrument',
-                actionButton: {
-                  id: 'viewChartBtn',
-                  tooltip: 'View Chart',
-                  icon: '_defaultFdc3',
-                  buttonStyle: {
-                    tone: 'warning',
-                    variant: 'outlined',
-                  },
-                },
-              },
-            ],
-          },
-        },
-        actionColumnDefaultConfiguration: {
-          width: 50,
-        },
-      },
       predefinedConfig: {
         Dashboard: {
           DashboardTitle: 'Orders',
