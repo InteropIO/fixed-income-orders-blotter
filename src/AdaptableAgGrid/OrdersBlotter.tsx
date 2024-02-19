@@ -1,25 +1,18 @@
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Root } from 'react-dom/client';
-import {
-  GridOptions,
-  IRowNode,
-  RowClickedEvent,
-} from '@ag-grid-community/core';
+import { GridOptions, RowClickedEvent } from '@ag-grid-community/core';
 import { AgGridReact } from '@ag-grid-community/react';
 import AdaptableReact, {
   AdaptableApi,
   AdaptableOptions,
-  RowHighlightInfo,
 } from '@adaptabletools/adaptable-react-aggrid';
 import { columnDefs, defaultColDef } from './columnDefs';
-import { AdaptableOrderColumns, NewOrder, rowData } from './rowData';
+import { AdaptableOrderColumns, rowData } from './rowData';
 import { renderReactRoot } from '../react-18-utils';
 import { agGridModules } from './agGridModules';
 
-import type { Order } from '@finos/fdc3';
 import '@interopio/theme-demo-apps/dist/io.applications.css';
-import { IO_Order, createNotification } from './createNotification';
 import { useIOConnect } from '@interopio/react-hooks';
 import { IOConnectWorkspaces } from '@interopio/workspaces-api';
 
@@ -27,8 +20,6 @@ const renderWeakMap: WeakMap<HTMLElement, Root> = new WeakMap();
 const Revision = 4;
 
 export const OrdersBlotter = () => {
-  const ioD = (window as any).io;
-
   const gridOptions = useMemo<GridOptions<AdaptableOrderColumns>>(
     () => ({
       defaultColDef,
@@ -51,19 +42,7 @@ export const OrdersBlotter = () => {
       userName: 'Test User',
       adaptableId: 'AdaptableFixedIncomeOrders',
       fdc3Options: {
-        enableLogging: true,
-        gridDataContextMapping: {
-          'fdc3.instrument': {
-            name: '_field.ISIN',
-            id: {
-              ISIN: '_field.ISIN',
-            },
-          },
-          'fdc3.contact': {
-            name: '_field.ExecutedBroker',
-            id: {},
-          },
-        },
+        enableLogging: false,
         intents: {
           raises: {
             ViewChart: [
@@ -80,118 +59,16 @@ export const OrdersBlotter = () => {
                 },
               },
             ],
-            ViewNews: [
-              {
-                contextType: 'fdc3.instrument',
-                actionButton: {
-                  id: 'viewNewsBtn',
-                  tooltip: 'View News',
-                  icon: {
-                    name: 'clipboard',
-                  },
-                  buttonStyle: {
-                    tone: 'info',
-                    variant: 'outlined',
-                  },
-                },
-              },
-            ],
-            ViewInstrument: [
-              {
-                contextType: 'fdc3.instrument',
-                actionButton: {
-                  id: 'viewInstrumentBtn',
-                  tooltip: 'View Instrument',
-                  icon: {
-                    name: 'visibility-on',
-                  },
-                  buttonStyle: {
-                    tone: 'success',
-                    variant: 'outlined',
-                  },
-                },
-              },
-            ],
-          },
-          listensFor: ['CreateOrder', 'ViewOrder', 'UpdateOrder'],
-          handleIntent: async (fdc3IntentContext) => {
-            // handleIntent: (fdc3IntentContext: HandleFdc3IntentContext) => {
-            console.log(`Received context: `, fdc3IntentContext);
-            const { adaptableApi, context, intent } = fdc3IntentContext;
-            const order = context as Order & IO_Order;
-            // as unknown as FDC3_Order;
-            const { details, id, name, type } = order;
-
-            // this is bespoke to our demo and will need to be adapted for other OMS platforms
-            const { ioOrderId } = id;
-
-            if (intent === 'ViewOrder') {
-              if (ioOrderId) {
-                const rowHighlightInfo: RowHighlightInfo = {
-                  primaryKeyValue: Number(ioOrderId),
-                  timeout: 5000,
-                  highlightStyle: { BackColor: 'Yellow', ForeColor: 'Black' },
-                };
-                adaptableApi.gridApi.jumpToRow(Number(ioOrderId));
-                adaptableApi.gridApi.highlightRow(rowHighlightInfo);
-              }
-            }
-
-            if (intent === 'CreateOrder') {
-              if (order) {
-                const { details } = order as unknown as NewOrder;
-                const { product } = details;
-
-                const newRowData: AdaptableOrderColumns = {
-                  OrderID: Number(id.ioOrderId), // should auto id if it doesn't exist
-                  Status: details.status || 'New',
-                  TransactionType: details.transactionType,
-                  Description: details.description,
-                  ISIN: product?.instrument?.id?.ISIN as any,
-                  Issuer: details.issuer,
-                  IssuerLEI: details.issuerLEI,
-                  Yield: details.yield,
-                  Maturity: details.maturity,
-                  TargetPrice: details.targetPrice,
-                  OrderSize: details.orderSize,
-                  CreationDateTime: '',
-                };
-
-                // Use Adaptable API to add the new row
-                adaptableApi.gridApi
-                  .addGridData([newRowData])
-                  .then(() => {
-                    // create a notification when a row is successfully added
-                    // ioD.then((io) => {
-                    createNotification(ioD, order);
-                    // });
-                  })
-                  .catch((error) => {
-                    console.error(error);
-                  });
-              }
-            }
-
-            if (intent === 'UpdateOrder') {
-              // primaryKey is OrderId Column
-              const node: IRowNode =
-                adaptableApi.gridApi.getRowNodeForPrimaryKey(ioOrderId);
-              const orderRow = node.data as AdaptableOrderColumns;
-              // TODO: update the correct fields
-              orderRow.Status = 'filled';
-              adaptableApi.gridApi.updateGridData([orderRow]);
-            }
           },
         },
         actionColumnDefaultConfiguration: {
-          width: 150,
+          width: 50,
         },
       },
       predefinedConfig: {
         Dashboard: {
           DashboardTitle: 'Orders',
           showQuickSearchInHeader: false,
-          // IsHidden: true,
         },
         Theme: {
           CurrentTheme: 'dark',
