@@ -41,6 +41,9 @@ export const OrdersBlotter = () => {
       primaryKey: 'OrderID',
       userName: 'Test User',
       adaptableId: 'AdaptableFixedIncomeOrders',
+      filterOptions: {
+        clearFiltersOnStartUp: true,
+      },
       predefinedConfig: {
         Dashboard: {
           DashboardTitle: 'Orders',
